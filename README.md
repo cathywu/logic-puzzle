@@ -47,6 +47,7 @@ desired
 Pseudocode
 ----------
 **Objects**
+
 Grid:
     Size: x,y
     IsValid: bool=function(x,y) (i.e. not an obstacle)
@@ -61,7 +62,9 @@ Characters: White rabbit, Alice
     HasRabit: bool (for Alice)
 
 **Functions**
+
 init() - initialize grid, tools, characters
+
 reset() - initial puzzle condition
 
-**
+**Gameplay**
