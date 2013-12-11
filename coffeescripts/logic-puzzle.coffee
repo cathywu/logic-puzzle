@@ -110,4 +110,4 @@ class LogicPuzzle
 
     numberOfAliveNeighbors
 
-window.GameOfLife = GameOfLife
+window.LogicPuzzle = LogicPuzzle
