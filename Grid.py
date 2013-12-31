@@ -1,5 +1,16 @@
 import numpy as np
 
+NORTH = 0
+EAST = 1
+SOUTH = 2
+WEST = 3
+
+def index2d(myList, v):
+    for i, x in enumerate(myList):
+      for j, y in enumerate(x):
+        if v in y:
+            return (i, j)
+
 class Grid:
     '''
       N
@@ -14,27 +25,39 @@ class Grid:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.blocks = [[None for i in range(y)] for j in range(x)]
+        self.cells = [[[] for i in range(y)] for j in range(x)]
         self.vwalls = np.zeros((self.x,self.y+1))
         self.hwalls = np.zeros((self.x+1,self.y))
 
         for i in range(x):
-          self.addWWall((i,0))
+          self.addWall((i,0), WEST)
         for i in range(x):
-          self.addEWall((i,y-1))
+          self.addWall((i,y-1), EAST)
         for i in range(y):
-          self.addNWall((0,i))
+          self.addWall((0,i), NORTH)
         for i in range(y):
-          self.addSWall((x-1,i))
+          self.addWall((x-1,i), SOUTH)
 
     def addThing(self, thing, (x, y)):
-        self.blocks[x][y] = thing
+        self.removeThing(thing)
+        self.cells[x][y].append(thing)
 
-    def getThing(self,(x,y)):
-        return self.blocks[x][y]
+    def getThings(self,(x,y)):
+        return self.cells[x][y]
 
-    def hasThing(self,(x,y)):
-        return not self.getThing([x,y]) is None
+    def removeThing(self, thing):
+        p = self.positionOf(thing)
+        if p:
+            self.getThings(p).remove(thing)
+        return p
+
+    def positionOf(self, thing):
+        return index2d(self.cells, thing)
+
+    def moveThing(self, thing, directions):
+        p = self.positionOf(thing)
+        if not p:
+            return
 
     def addWallRightOf(self, x, y):
         self.vwalls[x,y] = 1
@@ -42,33 +65,35 @@ class Grid:
     def addWallBelow(self, x, y):
         self.hwalls[x,y] = 1
 
-    def addNWall(self, (x,y)):
-      self.addWallBelow(x, y)
-    def addSWall(self, (x,y)):
-      self.addWallBelow(x+1, y)
-    def addWWall(self, (x,y)):
-      self.addWallRightOf(x, y)
-    def addEWall(self, (x,y)):
-      self.addWallRightOf(x, y+1)
+    def addWall(self, (x,y), direction):
+      if direction == NORTH:
+        self.addWallBelow(x, y)
+      elif direction == SOUTH:
+        self.addWallBelow(x+1, y)
+      elif direction == WEST:
+        self.addWallRightOf(x, y)
+      elif direction == EAST:
+        self.addWallRightOf(x, y+1)
 
-    def getNWall(self, (x,y)):
-      return self.hwalls[x, y]
-    def getSWall(self, (x,y)):
-      return self.hwalls[x+1, y]
-    def getWWall(self, (x,y)):
-      return self.vwalls[x, y]
-    def getEWall(self, (x,y)):
-      return self.vwalls[x, y+1]
+    def getWall(self, (x,y), direction):
+      if direction == NORTH:
+        return self.hwalls[x, y]
+      elif direction == SOUTH:
+        return self.hwalls[x+1, y]
+      elif direction == WEST:
+        return self.vwalls[x, y]
+      elif direction == EAST:
+        return self.vwalls[x, y+1]
 
     def getWalls(self, (x, y)):
-        return [self.getNWall((x,y)), self.getEWall((x,y)), self.getSWall((x,y)), self.getWWall((x,y))]
+        return [self.getWall((x,y), d) for d in [NORTH, EAST, SOUTH, WEST]]
 
     def draw_grid(self):
-        for r, row in enumerate(self.blocks):
+        for r, row in enumerate(self.cells):
             print "+" + "+".join(["=" if w else " " for w in self.hwalls[r]]) + "+"
 
             walls = ["|" if w else " " for w in self.vwalls[r]]
-            cells = [" " if t is None else t.symbol for t in row]
+            cells = [" " if not t else t[-1].symbol for t in row]
             rowstring = walls + cells
             rowstring[::2] = walls
             rowstring[1::2] = cells
@@ -78,9 +103,9 @@ class Grid:
 
 if __name__ == '__main__':
     g = Grid(4, 10)
-    g.addEWall([0,0])
-    g.addEWall([1,0])
-    g.addEWall([2,0])
+    g.addWall([0,0], EAST)
+    g.addWall([1,0], EAST)
+    g.addWall([2,0], EAST)
     g.draw_grid()
 
     print g.getWalls((0,1))
