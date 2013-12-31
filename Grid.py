@@ -39,8 +39,27 @@ class Grid:
     def is_hwall(self,x,y):
         return self.hwalls[x,y]
 
+    def addNWall(self, (x,y)):
+      self.add_hwall(self, x, y):
+    def addSWall(self, (x,y)):
+      self.add_hwall(self, x+1, y):
+    def addWWall(self, (x,y)):
+      self.add_vwall(self, x, y):
+    def addEWall(self, (x,y)):
+      self.add_vwall(self, x, y+1):
+
+    def getNWall(self, (x,y)):
+      return self.hwalls[x, y]
+    def getSWall(self, (x,y)):
+      return self.hwalls[x+1, y]
+    def getWWall(self, (x,y)):
+      return self.vwalls[x, y]
+    def getEWall(self, (x,y)):
+      return self.vwalls[x, y+1]
+
     def getWalls(self, (x, y)):
-        return [self.vwals[x,y], self.hwals[
+        return [self.getNWall((x,y)), self.getEWall((x,y)), self.getSWall((x,y)), self.getWWall((x,y))]
+
     def draw_grid(self):
         for i in range(self.y):
             print self.blocks[i,:]
