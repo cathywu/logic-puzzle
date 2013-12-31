@@ -34,19 +34,19 @@ class Grid:
         return self.vwalls[x,y]
 
     def add_hwall(self, x, y):
-        self.vwalls[x,y] = 1
+        self.hwalls[x,y] = 1
 
     def is_hwall(self,x,y):
         return self.hwalls[x,y]
 
     def addNWall(self, (x,y)):
-      self.add_hwall(self, x, y):
+      self.add_hwall(x, y)
     def addSWall(self, (x,y)):
-      self.add_hwall(self, x+1, y):
+      self.add_hwall(x+1, y)
     def addWWall(self, (x,y)):
-      self.add_vwall(self, x, y):
+      self.add_vwall(x, y)
     def addEWall(self, (x,y)):
-      self.add_vwall(self, x, y+1):
+      self.add_vwall(x, y+1)
 
     def getNWall(self, (x,y)):
       return self.hwalls[x, y]
@@ -61,6 +61,24 @@ class Grid:
         return [self.getNWall((x,y)), self.getEWall((x,y)), self.getSWall((x,y)), self.getWWall((x,y))]
 
     def draw_grid(self):
-        for i in range(self.y):
-            print self.blocks[i,:]
+        for r, row in enumerate(self.blocks):
+            print "+" + "+".join(["=" if w else " " for w in self.hwalls[r]]) + "+"
+
+            walls = ["|" if w else " " for w in self.vwalls[r]]
+            cells = [" " if t is None else t.symbol for t in row]
+            rowstring = walls + cells
+            rowstring[::2] = walls
+            rowstring[1::2] = cells
+            print "".join(rowstring)
+
+            # print self.blocks[i,:]
             # print ' '.join(['X' if bool(x) is not None else 'yyyy' for x in self.blocks[i,:]])
+        print "+" + "+".join(["=" if w else " " for w in self.hwalls[self.x]]) + "+"
+
+if __name__ == '__main__':
+    g = Grid(4, 10)
+    g.addNWall([0,0])
+    g.addSWall([0,0])
+    g.addWWall([0,0])
+    g.addEWall([0,0])
+    g.draw_grid()
