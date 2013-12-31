@@ -1,7 +1,9 @@
-NORTH = 0
-EAST = 1
-SOUTH = 2
-WEST = 3
+from Grid import *
+
+FORWARD = 0
+RIGHT = 1
+LEFT = -1
+BACK = 2
 
 class Thing:
     def __init__(self, name, symbol, delay):
@@ -9,10 +11,10 @@ class Thing:
         self.symbol = symbol
         self.delay = delay + 1
 
-    def spawn(self, grid, startPos, startDir):
+    def spawn(self, grid, startPos, startDir=NORTH):
         self.grid = grid
-        grid.addThing(startPos)
-        self.curDir = startDir
+        grid.addThing(self, startPos)
+        self.direction = startDir
         self.clock = 0
 
     def tick(self):
@@ -24,20 +26,11 @@ class Thing:
     def move(self):
         pass
 
-    def step(self):
-        curPos = self.grid.getPos(self)
-        if self.curDir == NORTH:
-            curPos[0] += 1
-        elif self.curDir == EAST:
-            curPos[1] += 1
-        elif self.curDir == SOUTH:
-            curPos[0] -= 1
-        elif self.curDir == WEST:
-            curPos[1] -= 1
-        else: # STOP or error
-            pass
-        # TODO: check to make sure move is valid, else handle appropriately
-        # TODO: Update Grid with new location of Thing
+    def relativeMove(self, relative):
+        absolute = [(self.direction + r) % 4 for r in relative]
+        d = self.grid.moveThing(self, absolute)
+        if d:
+            self.direction = d
 
     def turnRight(self):
         self.curDir = (self.curDir + 1) % 4
@@ -49,12 +42,10 @@ class Mirror(Thing):
     def __init__(self):
         Thing.__init__(self, "mirror", "/", 0)
 
-    def spawn(self, grid, startPos):
-        Thing.spawn(self, grid, startPos, STOP)
-
 class Alice(Thing):
     def __init__(self):
         Thing.__init__(self, "alice", "A", 0)
 
     def move(self):
-        pass
+        self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+

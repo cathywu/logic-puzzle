@@ -73,8 +73,8 @@ class Grid:
             if not self.getWall(p, d):
                 n = nextCell(p, d)
                 self.addThing(thing, n)
-                return n
-        return p
+                return d
+        return None
 
     def addWallRightOf(self, x, y):
         self.vwalls[x,y] = 1
