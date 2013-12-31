@@ -36,26 +36,20 @@ class Grid:
     def hasThing(self,(x,y)):
         return not self.getThing([x,y]) is None
 
-    def add_vwall(self, x, y):
+    def addWallRightOf(self, x, y):
         self.vwalls[x,y] = 1
 
-    def is_vwall(self,x,y):
-        return self.vwalls[x,y]
-
-    def add_hwall(self, x, y):
+    def addWallBelow(self, x, y):
         self.hwalls[x,y] = 1
 
-    def is_hwall(self,x,y):
-        return self.hwalls[x,y]
-
     def addNWall(self, (x,y)):
-      self.add_hwall(x, y)
+      self.addWallBelow(x, y)
     def addSWall(self, (x,y)):
-      self.add_hwall(x+1, y)
+      self.addWallBelow(x+1, y)
     def addWWall(self, (x,y)):
-      self.add_vwall(x, y)
+      self.addWallRightOf(x, y)
     def addEWall(self, (x,y)):
-      self.add_vwall(x, y+1)
+      self.addWallRightOf(x, y+1)
 
     def getNWall(self, (x,y)):
       return self.hwalls[x, y]
@@ -80,8 +74,6 @@ class Grid:
             rowstring[1::2] = cells
             print "".join(rowstring)
 
-            # print self.blocks[i,:]
-            # print ' '.join(['X' if bool(x) is not None else 'yyyy' for x in self.blocks[i,:]])
         print "+" + "+".join(["=" if w else " " for w in self.hwalls[self.x]]) + "+"
 
 if __name__ == '__main__':
