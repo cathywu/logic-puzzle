@@ -29,7 +29,7 @@ class Thing:
     def relativeMove(self, relative):
         absolute = [(self.direction + r) % 4 for r in relative]
         d = self.grid.moveThing(self, absolute)
-        if d:
+        if d is not None:
             self.direction = d
 
     def turnRight(self):
@@ -48,4 +48,5 @@ class Alice(Thing):
 
     def move(self):
         self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+        # self.symbol = ["^", ">", "v", "<"][self.direction]
 
