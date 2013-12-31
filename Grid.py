@@ -5,6 +5,17 @@ EAST = 1
 SOUTH = 2
 WEST = 3
 
+def nextCell(position, direction):
+    if direction == NORTH:
+        return [position[0] - 1, position[1]]
+    if direction == SOUTH:
+        return [position[0] + 1, position[1]]
+    if direction == WEST:
+        return [position[0], position[1] - 1]
+    if direction == EAST:
+        return [position[0], position[1] + 1]
+    return position
+
 def index2d(myList, v):
     for i, x in enumerate(myList):
       for j, y in enumerate(x):
@@ -58,6 +69,12 @@ class Grid:
         p = self.positionOf(thing)
         if not p:
             return
+        for d in directions:
+            if not self.getWall(p, d):
+                n = nextCell(p, d)
+                self.addThing(thing, n)
+                return n
+        return p
 
     def addWallRightOf(self, x, y):
         self.vwalls[x,y] = 1
