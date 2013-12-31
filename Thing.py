@@ -9,7 +9,7 @@ class Thing:
     def __init__(self, name, symbol, delay):
         self.name = name
         self.symbol = symbol
-        self.delay = delay + 1
+        self.delay = delay 
 
     def spawn(self, grid, startPos, startDir=NORTH):
         self.grid = grid
@@ -18,10 +18,11 @@ class Thing:
         self.clock = 0
 
     def tick(self):
-        if self.clock % self.delay == 0:
+        if self.clock == self.delay:
+            self.clock = 0
             self.move()
-
-        self.clock += 1
+        else:
+            self.clock += 1
 
     def move(self):
         pass
@@ -55,14 +56,15 @@ class Alice(Thing):
         Thing.__init__(self, "alice", "A", 0)
 
     def move(self):
+        self.delay = 0
         self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
         self.symbol = ["^", ">", "v", "<"][self.direction]
     
     def collide(self, thing):
-        if thing.name == "mirror":
+        if thing.name == "mirror": # Run backwards 
             self.turn(BACK)
             self.move()
             self.move()
 
-        if thing.name == "chess":
-            self.move()
+        if thing.name == "chess": # Nap for one tick
+            self.delay = 1
