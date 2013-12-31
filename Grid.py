@@ -50,9 +50,16 @@ class Grid:
         for i in range(y):
           self.addWall((x-1,i), SOUTH)
 
+        self.things = {}
+
+    def tick(self):
+        for t in self.things.keys():
+            t.tick()
+
     def addThing(self, thing, (x, y)):
         self.removeThing(thing)
         self.cells[x][y].append(thing)
+        self.things[thing] = 1
         for t in self.cells[x][y][:-1]:
             t.collide(thing)
             thing.collide(t)
@@ -62,6 +69,7 @@ class Grid:
 
     def removeThing(self, thing):
         p = self.positionOf(thing)
+        self.things.pop(thing, None)
         if p:
             self.getThings(p).remove(thing)
         return p

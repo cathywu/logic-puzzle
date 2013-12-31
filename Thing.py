@@ -51,14 +51,30 @@ class Chess(Thing):
     def __init__(self):
         Thing.__init__(self, "chess", unichr(9823), 0)
 
+class Feather(Thing):
+    def __init__(self):
+        Thing.__init__(self, "feather", 'F', 0)
+
+class Rabbit(Thing):
+    def __init__(self):
+        Thing.__init__(self, "rabbit", "r", 1)
+
+    def move(self):
+        self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+
 class Alice(Thing):
     def __init__(self):
         Thing.__init__(self, "alice", "A", 0)
+        self.rabbit = None
 
     def move(self):
         self.delay = 0
-        self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
-        self.symbol = ["^", ">", "v", "<"][self.direction]
+        if self.rabbit is None:
+            self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+            self.symbol = ["^", ">", "v", "<"][self.direction]
+        else: # TODO: move towards rabbit
+            self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+            self.symbol = ["^", ">", "v", "<"][self.direction]
     
     def collide(self, thing):
         if thing.name == "mirror": # Run backwards 
@@ -68,3 +84,18 @@ class Alice(Thing):
 
         if thing.name == "chess": # Nap for one tick
             self.delay = 1
+
+        if thing.name == "feather": # Sneeze
+            p = self.grid.positionOf(self)
+            d = self.direction
+
+            self.move()
+
+            self.rabbit = Rabbit()
+            self.rabbit.spawn(self.grid, p, d)
+            self.rabbit.turn(BACK)
+            self.rabbit.move()
+
+        if thing.name == "rabbit": # pick up rabbit
+            self.grid.removeThing(thing)
+            self.rabbit = None
