@@ -18,6 +18,15 @@ class Grid:
         self.vwalls = np.zeros((self.x,self.y+1))
         self.hwalls = np.zeros((self.x+1,self.y))
 
+        for i in range(x):
+          self.addWWall((i,0))
+        for i in range(x):
+          self.addEWall((i,y-1))
+        for i in range(y):
+          self.addNWall((0,i))
+        for i in range(y):
+          self.addSWall((x-1,i))
+
     def addThing(self, thing, (x, y)):
         self.blocks[x][y] = thing
 
@@ -77,8 +86,10 @@ class Grid:
 
 if __name__ == '__main__':
     g = Grid(4, 10)
-    g.addNWall([0,0])
-    g.addSWall([0,0])
-    g.addWWall([0,0])
     g.addEWall([0,0])
+    g.addEWall([1,0])
+    g.addEWall([2,0])
     g.draw_grid()
+
+    print g.getWalls((0,1))
+
