@@ -9,10 +9,10 @@ class Thing:
         self.symbol = symbol
         self.delay = delay + 1
 
-    def spawn(self, grid, startPos, startdir):
+    def spawn(self, grid, startPos, startDir):
         self.grid = grid
         grid.addThing(startPos)
-        self.curdir = startdir
+        self.curDir = startDir
         self.clock = 0
 
     def tick(self):
@@ -26,16 +26,24 @@ class Thing:
 
     def step(self):
         curPos = self.grid.getPos(self)
-        if self.curdir == NORTH:
+        if self.curDir == NORTH:
             curPos[0] += 1
-        elif self.curdir == EAST:
+        elif self.curDir == EAST:
             curPos[1] += 1
-        elif self.curdir == SOUTH:
+        elif self.curDir == SOUTH:
             curPos[0] -= 1
-        elif self.curdir == WEST:
+        elif self.curDir == WEST:
             curPos[1] -= 1
         else: # STOP or error
             pass
+        # TODO: check to make sure move is valid, else handle appropriately
+        # TODO: Update Grid with new location of Thing
+
+    def turnRight(self):
+        self.curDir = (self.curDir + 1) % 4
+
+    def turnLeft(self):
+        self.curDir = (self.curDir - 1) % 4
 
 class Mirror(Thing):
     def __init__(self):
