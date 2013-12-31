@@ -1,4 +1,5 @@
 import numpy as np
+from itertools import combinations
 
 NORTH = 0
 EAST = 1
@@ -52,6 +53,9 @@ class Grid:
     def addThing(self, thing, (x, y)):
         self.removeThing(thing)
         self.cells[x][y].append(thing)
+        for t in self.cells[x][y][:-1]:
+            t.collide(thing)
+            thing.collide(t)
 
     def getThings(self,(x,y)):
         return self.cells[x][y]
@@ -72,6 +76,7 @@ class Grid:
         for d in directions:
             if not self.getWall(p, d):
                 n = nextCell(p, d)
+                thing.direction = d
                 self.addThing(thing, n)
                 return d
         return None

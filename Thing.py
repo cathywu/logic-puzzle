@@ -26,11 +26,15 @@ class Thing:
     def move(self):
         pass
 
+    def collide(self, thing):
+        pass
+
+    def turn(self, direction):
+        self.direction = (self.direction + direction) % 4
+
     def relativeMove(self, relative):
         absolute = [(self.direction + r) % 4 for r in relative]
-        d = self.grid.moveThing(self, absolute)
-        if d is not None:
-            self.direction = d
+        self.grid.moveThing(self, absolute)
 
     def turnRight(self):
         self.curDir = (self.curDir + 1) % 4
@@ -40,7 +44,11 @@ class Thing:
 
 class Mirror(Thing):
     def __init__(self):
-        Thing.__init__(self, "mirror", "/", 0)
+        Thing.__init__(self, "mirror", 'm', 0)
+
+class Chess(Thing):
+    def __init__(self):
+        Thing.__init__(self, "chess", unichr(9823), 0)
 
 class Alice(Thing):
     def __init__(self):
@@ -48,5 +56,13 @@ class Alice(Thing):
 
     def move(self):
         self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
-        # self.symbol = ["^", ">", "v", "<"][self.direction]
+        self.symbol = ["^", ">", "v", "<"][self.direction]
+    
+    def collide(self, thing):
+        if thing.name == "mirror":
+            self.turn(BACK)
+            self.move()
+            self.move()
 
+        if thing.name == "chess":
+            self.move()
