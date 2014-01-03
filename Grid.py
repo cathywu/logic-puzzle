@@ -105,6 +105,14 @@ class Grid:
       elif direction == EAST:
         self.addWallRightOf(x, y+1)
 
+    def addWall180(self, (x,y), direction):
+        self.addWall((x, y), direction)
+        self.addWall((self.x - x - 1, self.y - y - 1), (direction + 2) % 4)
+
+    def addWallQuad(self, (x,y), direction):
+        self.addWall180((x, y), direction)
+        self.addWall180((y, self.y - x - 1), (direction + 1) % 4)
+
     def getWall(self, (x,y), direction):
       if direction == NORTH:
         return self.hwalls[x, y]
@@ -119,8 +127,9 @@ class Grid:
         return [self.getWall((x,y), d) for d in [NORTH, EAST, SOUTH, WEST]]
 
     def draw_grid(self):
+        delim = " "
         for r, row in enumerate(self.cells):
-            print "+" + "+".join(["=" if w else " " for w in self.hwalls[r]]) + "+"
+            print delim.join([""] + ["-" if w else " " for w in self.hwalls[r]] + [""]) 
 
             walls = ["|" if w else " " for w in self.vwalls[r]]
             cells = [" " if not t else t[-1].symbol for t in row]
@@ -129,13 +138,19 @@ class Grid:
             rowstring[1::2] = cells
             print "".join(rowstring)
 
-        print "+" + "+".join(["=" if w else " " for w in self.hwalls[self.x]]) + "+"
+        print delim.join([""] + ["-" if w else " " for w in self.hwalls[self.x]] + [""]) 
 
 if __name__ == '__main__':
-    g = Grid(4, 10)
-    g.addWall([0,0], EAST)
-    g.addWall([1,0], EAST)
-    g.addWall([2,0], EAST)
+    g = Grid(8, 8)
+    #g.addWall([1,0], EAST)
+    #g.addWall([2,0], EAST)
+    #g.addWall180([1,0], EAST)
+    g.addWallQuad([2,0], EAST)
+    g.addWallQuad([4,0], EAST)
+    g.addWallQuad([2,1], SOUTH)
+    g.addWallQuad([1,2], SOUTH)
+    g.addWallQuad([3,2], SOUTH)
+    g.addWallQuad([3,2], EAST)
     g.draw_grid()
 
     print g.getWalls((0,1))

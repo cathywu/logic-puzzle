@@ -37,12 +37,6 @@ class Thing:
         absolute = [(self.direction + r) % 4 for r in relative]
         self.grid.moveThing(self, absolute)
 
-    def turnRight(self):
-        self.curDir = (self.curDir + 1) % 4
-
-    def turnLeft(self):
-        self.curDir = (self.curDir - 1) % 4
-
 class Mirror(Thing):
     def __init__(self):
         Thing.__init__(self, "mirror", 'm', 0)
@@ -56,11 +50,22 @@ class Feather(Thing):
         Thing.__init__(self, "feather", 'F', 0)
 
 class Rabbit(Thing):
+
     def __init__(self):
         Thing.__init__(self, "rabbit", "r", 1)
+        self.lastTurn = RIGHT
 
     def move(self):
-        self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+        if self.lastTurn == RIGHT:
+            d = self.direction
+            self.relativeMove([LEFT, RIGHT, FORWARD, BACK])
+            if (self.direction - d) % 4 == LEFT % 4:
+                self.lastTurn = LEFT
+        else:
+            d = self.direction
+            self.relativeMove([RIGHT, LEFT, FORWARD, BACK])
+            if (self.direction - d) % 4 == RIGHT % 4:
+                self.lastTurn = RIGHT
 
 class Alice(Thing):
     def __init__(self):
@@ -72,8 +77,24 @@ class Alice(Thing):
         if self.rabbit is None:
             self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
             self.symbol = ["^", ">", "v", "<"][self.direction]
-        else: # TODO: move towards rabbit
-            self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+        else: # Move closer NS if possible, else move closer EW if possible, else stay still
+            p = self.grid.positionOf(self)
+            r = self.grid.positionOf(self.rabbit)
+
+            dx = r[0] - p[0]
+            dy = r[1] - p[1]
+
+            step = []
+            if dx > 0:
+                step += [SOUTH]
+            elif dx < 0: 
+                step += [NORTH]
+            if dy > 0: 
+                step += [EAST]
+            elif dy < 0:
+                step += [WEST]
+
+            self.grid.moveThing(self, step)
             self.symbol = ["^", ">", "v", "<"][self.direction]
     
     def collide(self, thing):
@@ -89,12 +110,24 @@ class Alice(Thing):
             p = self.grid.positionOf(self)
             d = self.direction
 
-            self.move()
+            # Step forwards
+            self.relativeMove([FORWARD, RIGHT, LEFT, BACK])
 
-            self.rabbit = Rabbit()
-            self.rabbit.spawn(self.grid, p, d)
-            self.rabbit.turn(BACK)
-            self.rabbit.move()
+            # Drop rabbit 
+            if self.rabbit is None:
+                self.rabbit = Rabbit()
+                self.rabbit.spawn(self.grid, p, d)
+                self.rabbit.turn(BACK)
+
+                '''
+                # Throw rabbit backwards
+                self.rabbit.relativeMove([FORWARD, RIGHT, LEFT, BACK])
+                if (self.direction - d) % 4 == LEFT % 4:
+                    self.lastTurn = LEFT
+                '''
+
+                # Rabbit hops
+                self.rabbit.move()
 
         if thing.name == "rabbit": # pick up rabbit
             self.grid.removeThing(thing)
