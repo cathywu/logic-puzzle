@@ -6,10 +6,11 @@ LEFT = -1
 BACK = 2
 
 class Thing:
-    def __init__(self, name, symbol, delay):
+    def __init__(self, name, symbol, delay=-1):
         self.name = name
         self.symbol = symbol
         self.delay = delay 
+        self.hasMoved = False
 
     def spawn(self, grid, startPos, startDir=NORTH):
         self.grid = grid
@@ -21,8 +22,14 @@ class Thing:
         if self.clock == self.delay:
             self.clock = 0
             self.move()
+            self.hasMoved = True
         else:
             self.clock += 1
+
+    def moved(self):
+        ret = self.hasMoved
+        self.hasMoved = False
+        return ret
 
     def move(self):
         pass
@@ -39,21 +46,22 @@ class Thing:
 
 class Mirror(Thing):
     def __init__(self):
-        Thing.__init__(self, "mirror", 'm', 0)
+        Thing.__init__(self, "mirror", 'm')
 
 class Chess(Thing):
     def __init__(self):
-        Thing.__init__(self, "chess", unichr(9823), 0)
+        Thing.__init__(self, "chess", unichr(9823))
 
 class Feather(Thing):
     def __init__(self):
-        Thing.__init__(self, "feather", 'F', 0)
+        Thing.__init__(self, "feather", 'F')
 
 class Rabbit(Thing):
 
     def __init__(self):
         Thing.__init__(self, "rabbit", "r", 1)
         self.lastTurn = RIGHT
+        self.isMovable = True
 
     def move(self):
         if self.lastTurn == RIGHT:
@@ -71,6 +79,7 @@ class Alice(Thing):
     def __init__(self):
         Thing.__init__(self, "alice", "A", 0)
         self.rabbit = None
+        self.isMovable = True
 
     def move(self):
         self.delay = 0
@@ -100,8 +109,8 @@ class Alice(Thing):
     def collide(self, thing):
         if thing.name == "mirror": # Run backwards 
             self.turn(BACK)
-            self.move()
-            self.move()
+            self.relativeMove([FORWARD])
+            # self.relativeMove([FORWARD])
 
         if thing.name == "chess": # Nap for one tick
             self.delay = 1
@@ -117,7 +126,7 @@ class Alice(Thing):
             if self.rabbit is None:
                 self.rabbit = Rabbit()
                 self.rabbit.spawn(self.grid, p, d)
-                self.rabbit.turn(BACK)
+                # self.rabbit.turn(BACK)
 
                 '''
                 # Throw rabbit backwards

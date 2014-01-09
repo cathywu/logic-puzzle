@@ -55,6 +55,10 @@ class Grid:
     def tick(self):
         for t in self.things.keys():
             t.tick()
+            if t.moved():
+                print t.name
+                self.draw_grid()
+                raw_input("")
 
     def addThing(self, thing, (x, y)):
         self.removeThing(thing)
@@ -95,6 +99,12 @@ class Grid:
     def addWallBelow(self, x, y):
         self.hwalls[x,y] = 1
 
+    def delWallRightOf(self, x, y):
+        self.vwalls[x,y] = 0
+
+    def delWallBelow(self, x, y):
+        self.hwalls[x,y] = 0
+
     def addWall(self, (x,y), direction):
       if direction == NORTH:
         self.addWallBelow(x, y)
@@ -104,6 +114,16 @@ class Grid:
         self.addWallRightOf(x, y)
       elif direction == EAST:
         self.addWallRightOf(x, y+1)
+
+    def delWall(self, (x,y), direction):
+      if direction == NORTH:
+        self.delWallBelow(x, y)
+      elif direction == SOUTH:
+        self.delWallBelow(x+1, y)
+      elif direction == WEST:
+        self.delWallRightOf(x, y)
+      elif direction == EAST:
+        self.delWallRightOf(x, y+1)
 
     def addWall180(self, (x,y), direction):
         self.addWall((x, y), direction)
@@ -127,7 +147,7 @@ class Grid:
         return [self.getWall((x,y), d) for d in [NORTH, EAST, SOUTH, WEST]]
 
     def draw_grid(self):
-        delim = " "
+        delim = "+"
         for r, row in enumerate(self.cells):
             print delim.join([""] + ["-" if w else " " for w in self.hwalls[r]] + [""]) 
 
